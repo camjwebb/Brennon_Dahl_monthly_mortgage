@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mortgage Payment Breakdown</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #155c3c;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .logo-container {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .logo-container-right {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .logo-link img {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid white;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .logo-container-right .logo-link img {
+        background-color: white;
+        padding: 4px;
+        object-fit: contain;
+        border: 1px solid white;
+    }
+
+    .logo-link img:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+    }
+
+    .logo-label {
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 4px;
+        line-height: 1.2;
+    }
+
+    .header-section {
+        text-align: center;
+        color: white;
+        padding: 20px 80px 0px 80px;
+    }
+
+    .main-heading {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 6px;
+        line-height: 1.3;
+    }
+
+    .sub-heading {
+        font-size: 15px;
+        font-weight: normal;
+        opacity: 0.95;
+    }
+
+    .content-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0 15px;
+        gap: 15px;
+        padding-top: 0px;
+        margin-top: -100px;
+    }
+
+    .diagram-container {
+        position: relative;
+        width: 100%;
+        max-width: 330px;
+        height: 330px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    svg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+
+    line {
+        stroke: rgba(255,255,255,0.4);
+        stroke-width: 3;
+    }
+
+    .center-bubble {
+        position: absolute;
+        width: 110px;
+        height: 110px;
+        background-color: rgba(34,139,84,0.6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(34,139,84,0.3);
+        z-index: 10;
+    }
+
+    .center-bubble-text {
+        font-size: 14px;
+        line-height: 1.3;
+    }
+
+    .outer-bubble {
+        position: absolute;
+        width: 88px;
+        height: 88px;
+        background-color: rgba(34,139,84,0.6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: white;
+        font-weight: bold;
+        font-size: 13px;
+        box-shadow: 0 4px 15px rgba(34,139,84,0.2);
+    }
+
+    .highlighted {
+        transform: scale(1.12);
+        box-shadow: 0 0 25px 10px rgba(255,255,255,0.7);
+        background-color: rgba(50,205,120,0.9);
+        z-index: 20;
+    }
+
+    .definition-box {
+        background-color: rgba(34,139,84,0.6);
+        color: white;
+        border-radius: 12px;
+        text-align: center;
+        width: 100%;
+        max-width: 340px;
+        height: 85px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 14px;
+        box-shadow: 0 4px 15px rgba(34,139,84,0.3);
+        transition: all 0.3s ease;
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+
+    .definition-title {
+        font-size: 17px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .definition-text {
+        font-size: 14px;
+        line-height: 1.35;
+    }
+
+    /* Tablet styles */
+    @media (min-width: 768px) {
+        .logo-link img {
+            width: 70px;
+            height: 70px;
+            border: 3px solid white;
+        }
+
+        .logo-container-right .logo-link img {
+            width: 70px;
+            height: 70px;
+            padding: 2px;
+        }
+
+        .logo-label {
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .header-section {
+            padding: 35px 20px 25px 20px;
+        }
+
+        .main-heading {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .sub-heading {
+            font-size: 20px;
+        }
+
+        .diagram-container {
+            max-width: 500px;
+            height: 500px;
+        }
+
+        .center-bubble {
+            width: 160px;
+            height: 160px;
+        }
+
+        .center-bubble-text {
+            font-size: 19px;
+            line-height: 1.3;
+        }
+
+        .outer-bubble {
+            width: 130px;
+            height: 130px;
+            font-size: 17px;
+        }
+
+        .definition-box {
+            max-width: 550px;
+            height: 100px;
+            padding: 18px;
+            margin-bottom: 40px;
+        }
+
+        .definition-title {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .definition-text {
+            font-size: 17px;
+            line-height: 1.4;
+        }
+    }
+
+    /* Desktop styles */
+    @media (min-width: 1024px) {
+        .logo-link img {
+            width: 70px;
+            height: 70px;
+        }
+
+        .logo-container-right .logo-link img {
+            width: 70px;
+            height: 70px;
+            padding: 2px;
+        }
+
+        .logo-label {
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .header-section {
+            padding: 30px 20px 20px 20px;
+        }
+
+        .main-heading {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+
+        .sub-heading {
+            font-size: 19px;
+        }
+
+        .content-wrapper {
+            gap: 25px;
+        }
+
+        .diagram-container {
+            max-width: 480px;
+            height: 480px;
+        }
+
+        .center-bubble {
+            width: 150px;
+            height: 150px;
+        }
+
+        .center-bubble-text {
+            font-size: 18px;
+        }
+
+        .outer-bubble {
+            width: 120px;
+            height: 120px;
+            font-size: 16px;
+        }
+
+        .definition-box {
+            max-width: 550px;
+            height: 95px;
+            padding: 18px;
+            margin-bottom: 35px;
+        }
+
+        .definition-title {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .definition-text {
+            font-size: 16px;
+            line-height: 1.4;
+        }
+    }
+
+</style>
+</head>
+<body>
+    <div class="logo-container">
+        <a href="#" target="_blank" class="logo-link" id="leftLogoLink">
+            <img src="" alt="" id="leftLogoImg">
+        </a>
+        <div class="logo-label">Realtor</div>
+    </div>
+
+    <div class="logo-container-right">
+        <a href="#" target="_blank" class="logo-link" id="rightLogoLink">
+            <img src="" alt="" id="rightLogoImg">
+        </a>
+        <div class="logo-label">Loan<br>Officer</div>
+    </div>
+
+    <div class="header-section">
+        <h1 class="main-heading">Monthly Mortgage Payment</h1>
+        <p class="sub-heading">Click on each circle to learn more</p>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="diagram-container">
+            <svg id="svgLines"></svg>
+
+            <div class="center-bubble" id="centerBubble" data-key="payment">
+                <div class="center-bubble-text">Monthly<br>Mortgage<br>Payment</div>
+            </div>
+
+            <div class="outer-bubble" id="interest" data-key="interest">Interest</div>
+            <div class="outer-bubble" id="taxes" data-key="taxes">Taxes</div>
+            <div class="outer-bubble" id="hoi" data-key="hoi">HOI</div>
+            <div class="outer-bubble" id="pmi" data-key="pmi">PMI</div>
+            <div class="outer-bubble" id="hoa" data-key="hoa">HOA</div>
+            <div class="outer-bubble" id="principal" data-key="principal">Principal</div>
+        </div>
+
+        <div class="definition-box" id="definitionBox">
+            <div class="definition-title">Monthly Mortgage Payment</div>
+            <div class="definition-text">Your total monthly cost for your home, combining all parts of your payment.</div>
+        </div>
+    </div>
+
+    <script>
+        // Logo Configuration - Edit these values to change the logos
+        const logoConfig = {
+            leftLogo: {
+                imageUrl: "https://webdrive.utahrealestate.com/41ed4770417760937cac56d7c2d3705b.jpg",
+                linkUrl: "https://www.sothebysrealty.com/summitsir/eng/associate/820-a-df230508142710844861/brennon-dahl",
+                altText: "Brennon Dahl"
+            },
+            rightLogo: {
+                imageUrl: "https://houzd.com/wp-content/uploads/2020/08/cameron-square.png",
+                linkUrl: "https://houzd.com/loan-officer/cameron-webb/",
+                altText: "Cameron Webb"
+            }
+        };
+
+        // Apply logo configuration
+        function initializeLogos() {
+            // Left logo
+            const leftLogoLink = document.getElementById('leftLogoLink');
+            const leftLogoImg = document.getElementById('leftLogoImg');
+            leftLogoLink.href = logoConfig.leftLogo.linkUrl;
+            leftLogoImg.src = logoConfig.leftLogo.imageUrl;
+            leftLogoImg.alt = logoConfig.leftLogo.altText;
+
+            // Right logo
+            const rightLogoLink = document.getElementById('rightLogoLink');
+            const rightLogoImg = document.getElementById('rightLogoImg');
+            rightLogoLink.href = logoConfig.rightLogo.linkUrl;
+            rightLogoImg.src = logoConfig.rightLogo.imageUrl;
+            rightLogoImg.alt = logoConfig.rightLogo.altText;
+        }
+
+        // Initialize logos on page load
+        initializeLogos();
+        const definitions = {
+            payment: {
+                title: "Monthly Mortgage Payment",
+                text: "Your monthly costs for owning your house."
+            },
+            principal: {
+                title: "Principal",
+                text: "Money paid to paying off your house."
+            },
+            interest: {
+                title: "Interest",
+                text: "Money paid to the lender for borrowing their money."
+            },
+            taxes: {
+                title: "Property Taxes",
+                text: "Money paid to the government for owning property."
+            },
+            hoi: {
+                title: "Homeowners Insurance",
+                text: "Money paid to protect your home from damage or loss."
+            },
+            pmi: {
+                title: "Private Mortgage Insurance",
+                text: "Money paid to protect the lender from late payments."
+            },
+            hoa: {
+                title: "Homeowners Association",
+                text: "Money paid to your HOA to maintain shared areas."
+            }
+        };
+
+        const positions = {
+            taxes: { angle: 0 },
+            hoi: { angle: 60 },
+            pmi: { angle: 120 },
+            hoa: { angle: 180 },
+            principal: { angle: 240 },
+            interest: { angle: 300 }
+        };
+
+        const container = document.querySelector('.diagram-container');
+        const svg = document.getElementById('svgLines');
+        const definitionBox = document.getElementById('definitionBox');
+        const centerBubble = document.getElementById('centerBubble');
+
+        function drawLines() {
+            svg.innerHTML = '';
+            const centerX = container.offsetWidth / 2;
+            const centerY = container.offsetHeight / 2;
+            
+            const baseRadius = Math.min(container.offsetWidth, container.offsetHeight);
+            const radius = baseRadius * 0.37;
+            const centerRadius = baseRadius * 0.14;
+            const outerRadius = baseRadius * 0.11;
+
+            Object.values(positions).forEach(pos => {
+                const angle = pos.angle * Math.PI / 180;
+                const startX = centerX + Math.cos(angle) * centerRadius;
+                const startY = centerY + Math.sin(angle) * centerRadius;
+                const endX = centerX + Math.cos(angle) * (radius - outerRadius);
+                const endY = centerY + Math.sin(angle) * (radius - outerRadius);
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', startX);
+                line.setAttribute('y1', startY);
+                line.setAttribute('x2', endX);
+                line.setAttribute('y2', endY);
+                svg.appendChild(line);
+            });
+        }
+
+        function positionBubbles() {
+            const centerX = container.offsetWidth / 2;
+            const centerY = container.offsetHeight / 2;
+            const baseRadius = Math.min(container.offsetWidth, container.offsetHeight);
+            const radius = baseRadius * 0.37;
+
+            Object.keys(positions).forEach(key => {
+                const bubble = document.getElementById(key);
+                const pos = positions[key];
+                const angle = pos.angle * Math.PI / 180;
+                const bubbleSize = bubble.offsetWidth / 2;
+                const x = centerX + Math.cos(angle) * radius - bubbleSize;
+                const y = centerY + Math.sin(angle) * radius - bubbleSize;
+                bubble.style.left = x + 'px';
+                bubble.style.top = y + 'px';
+            });
+        }
+
+        function updateDefinition(key) {
+            const def = definitions[key];
+            definitionBox.innerHTML = `
+                <div class="definition-title">${def.title}</div>
+                <div class="definition-text">${def.text}</div>
+            `;
+        }
+
+        function setActiveBubble(key) {
+            document.querySelectorAll('.outer-bubble, .center-bubble').forEach(b => b.classList.remove('highlighted'));
+            const bubble = document.getElementById(key === 'payment' ? 'centerBubble' : key);
+            bubble.classList.add('highlighted');
+            updateDefinition(key);
+        }
+
+        Object.keys(definitions).forEach(key => {
+            const el = document.getElementById(key === 'payment' ? 'centerBubble' : key);
+            if (el) {
+                el.addEventListener('click', () => setActiveBubble(key));
+            }
+        });
+
+        window.addEventListener('load', () => {
+            positionBubbles();
+            drawLines();
+            setActiveBubble('payment');
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                positionBubbles();
+                drawLines();
+            }, 250);
+        });
+    </script>
+</body>
+</html>
